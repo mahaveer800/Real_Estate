@@ -6,3 +6,26 @@
 *{
     font-family: Outfit;
 }
+
+/* 342px se choti screens ke liye buttons chhote karne ke liye */
+/* Default buttons (normal size) */
+.small-btn {
+  padding: 0.5rem 2rem;
+  font-size: 1rem;
+}
+
+@media (max-width: 342px) {
+  .small-btn {
+    padding: 0.4rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 257px) {
+  .small-btn {
+    padding: 0.3rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+

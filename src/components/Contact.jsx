@@ -1,35 +1,43 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import { API_KEY } from "../../data.js";
+ // ✅ data.js se import
 
 const Contact = () => {
   const [result, setResult] = React.useState("");
 
-  // ✅ Get API key from .env
-  const apiKey = import.meta.env.VITE_API_KEY;  
-  
   const onSubmit = async (event) => {
     event.preventDefault();
     setResult("Sending....");
-    const formData = new FormData(event.target);
 
-    // ✅ API key add kar
-    formData.append("access_key", apiKey);
+    const formData = new FormData();
+    formData.append("access_key", API_KEY); // ✅ Correct
 
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      body: formData,
-    });
+    formData.append("name", event.target.name.value);
+    formData.append("email", event.target.email.value);
+    formData.append("message", event.target.message.value);
 
-    const data = await response.json();
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (data.success) {
-      setResult("");
-      toast.success("Form Submitted Successfully");
-      event.target.reset();
-    } else {
-      console.log("Error", data);
-      toast.error(data.message);
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (data.success) {
+        toast.success("Form Submitted Successfully ✅");
+        event.target.reset();
+        setResult("");
+      } else {
+        toast.error(data.message || "Something went wrong ❌");
+        setResult("");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Network error. Try again!");
       setResult("");
     }
   };
@@ -44,7 +52,10 @@ const Contact = () => {
       id="Contact"
     >
       <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-center">
-        Contact <span className="underline underline-offset-4 decoration-1 under font-light">With Us</span>
+        Contact{" "}
+        <span className="underline underline-offset-4 decoration-1 font-light">
+          With Us
+        </span>
       </h1>
       <p className="text-center text-gray-500 mb-8 max-w-80 mx-auto">
         Ready to Make a Move? Let's Build Your Future Together
@@ -57,7 +68,7 @@ const Contact = () => {
             <input
               className="w-full border border-gray-300 rounded px-4 py-3 mt-2"
               type="text"
-              name="Name"
+              name="name"
               placeholder="Your Name"
               required
             />
@@ -67,7 +78,7 @@ const Contact = () => {
             <input
               className="w-full border border-gray-300 rounded px-4 py-3 mt-2 mx-2"
               type="email"
-              name="Email"
+              name="email"
               placeholder="Your Email"
               required
             />
@@ -78,11 +89,12 @@ const Contact = () => {
           Message
           <textarea
             className="w-full border border-gray-300 rounded py-3 px-4 mt-2 h-48 resize-none"
-            name="Message"
+            name="message"
             placeholder="Message"
             required
           ></textarea>
         </div>
+
         <button className="bg-blue-600 text-white py-2 px-12 mb-10 rounded">
           {result ? result : "Send Message"}
         </button>
